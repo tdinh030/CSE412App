@@ -1,3 +1,5 @@
+import psycopg2
+from psycopg2 import Error
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -5,39 +7,11 @@ app = Flask(__name__)
 
 ENV = 'dev'
 
-# Sets up connection to ElephantSQL Database
-if ENV == 'dev':
-    app.debug = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://rdbxscrg:ry0nqAde0R4mOupouZfsN2a_ykNNEAYO@kashin.db.elephantsql.com/rdbxscrg'
-else:
-    app.debug = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = ''
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-# Create a vehicle table
-
-
-class Vehicle(db.Model):
-    __tablename__ = 'vehicle'
-    id = db.Column(db.Integer, primary_key=True)
-    make = db.Column(db.String(200))
-    model = db.Column(db.String(200))
-    year = db.Column(db.Integer)
-    color = db.Column(db.String(200))
-    price = db.Column(db.Integer)
-
-# Constructor for table
-
-
-def __init__(self, make, model, year, color, price):
-    self.make = make
-    self.model = model
-    self.year = year
-    self.color = color
-    self.price = price
+hostname = 'kashin.db.elephantsql.com'
+database = 'rdbxscrg'
+username = 'rdbxscrg'
+pwd = 'ry0nqAde0R4mOupouZfsN2a_ykNNEAYO'
+port_id = '5432'
 
 # Returns user to home page
 
@@ -47,7 +21,6 @@ def index():
     return render_template('index.html')
 
 # Code for Search button
-# TODO: insert code for SQL queries
 
 
 @app.route('/submit', methods=['POST'])
@@ -58,12 +31,66 @@ def submit():
         year = request.form['year']
         color = request.form['color']
         price = request.form['price']
-        print(make, model, year, color, price)
+        # Prints user selection
+        #print(make, model, year, color, price)
+
         if make == '' or model == '' or year == '' or color == '' or price == '':
             return render_template('index.html', message='Please enter required fields')
-        return render_template('success.html')
+
+    # Connects to elephantSQL database and performs queries based on users selections
+    try:
+        conn = psycopg2.connect(
+            host=hostname,
+            dbname=database,
+            user=username,
+            password=pwd,
+            port=port_id
+        )
+
+        # SELECT query based on users selections
+        sql_select_Query = """select * from car where c_make = %s and c_model = %s and c_year = %s and c_color = %s"""
+        cursor = conn.cursor()
+        # Executing the query
+        cursor.execute(sql_select_Query, [make, model, year, color])
+        conn.commit()
+        # get all records
+        records = cursor.fetchall()
+        print("Total number of rows in table: ", cursor.rowcount)
+        # Displays user selected query
+        print("\nPrinting each row")
+        for row in records:
+            print("Cid = ", row[0], )
+            print("Sid = ", row[1])
+            print("Make  = ", row[2])
+            print("Model  = ", row[3])
+            print("Year  = ", row[4])
+            print("Color  = ", row[5])
+            print("Price  = ", row[6])
+            print("ZipCode  = ", row[7])
+            print("Engine  = ", row[8])
+            print("Transmission  = ", row[9], "\n")
+
+        #cursor = conn.cursor()
+        # Print PostgreSQL details
+        print("PostgreSQL server information")
+        print(conn.get_dsn_parameters(), "\n")
+        # Executing a SQL query
+        cursor.execute("SELECT version();")
+        # Fetch result
+        record = cursor.fetchone()
+        print("You are connected to - ", record, "\n")
+
+    except (Exception, Error) as error:
+        print("Error while connecting to PostgreSQL", error)
+    finally:
+        if (conn):
+            cursor.close()
+            conn.close()
+            print("PostgreSQL connection is closed")
+
+            return render_template('success.html')
 
 
 if __name__ == '__main__':
-    #app.debug = True
+    app.debug = True
     app.run()

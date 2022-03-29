@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        function myFunction() {
+          document.getElementById("demo").innerHTML = "Paragraph changed.";
+        }
+    </script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +15,9 @@
 <body>
     <div class="container">
         <img src="../static/logo2.png" alt="Logo" class="logo">
-        <!-- @todo - message -->
+        {% if message %}
+            <p class="message">{{ message | safe }}</p>
+        {% endif %}
         <form action="/submit" method="POST">
             <!--div class="form=group">
                 <h3>Customer Name</h3>
@@ -30,6 +37,16 @@
                     <option value="BMW">BMW</option>
                     <option value="Buick">Buick</option>
                     <option value="Cadillac">Cadillac</option>
+                    <option value="Chevy">Chevy</option>
+                    <option value="Ford">Ford</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Lexus">Lexus</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Porsche">Porsche</option>
+                    <option value="Tesla">Tesla</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Volkswagen">Volkswagen</option>
                 </select>
             </div>
             <div class="form-group">
@@ -41,6 +58,8 @@
                     <option value="335">335</option>
                     <option value="California">California</option>
                     <option value="ATS">ATS</option>
+                    <option value="911">911</option>
+                    <option value="Model 3">Model 3</option>
                 </select>
             </div>
             <div class="form-group">
@@ -76,20 +95,20 @@
                 <h3>Color</h3>
                 <select name="color">
                     <option value="">Select Color</option>
-                    <option value="Red">Red</option>
-                    <option value="White">White</option>
-                    <option value="Black">Black</option>
-                    <option value="Gray">Gray</option>
-                    <option value="Silver">Silver</option>
-                    <option value="Blue">Blue</option>
-                    <option value="Green">Green</option>
-                    <option value="Beige">Beige</option>
-                    <option value="Gold">Gold</option>
-                    <option value="Yellow">Yellow</option>
+                    <option value="RED">RED</option>
+                    <option value="WHITE">WHITE</option>
+                    <option value="BLACK">BLACK</option>
+                    <option value="GREY">GREY</option>
+                    <option value="SILVER">SILVER</option>
+                    <option value="BLUE">BLUE</option>
+                    <option value="GREEN">GREEN</option>
+                    <option value="BEIGE">BEIGE</option>
+                    <option value="GOLD">GOLD</option>
+                    <option value="YELLOW">YELLOW</option>
                 </select>
             </div>
             <div class="form-group">
-                <h3>Make</h3>
+                <h3>Price</h3>
                 <select name="price">
                     <option value="">Select Price</option>
                     <option value="less than $5000">less than $5000</option>

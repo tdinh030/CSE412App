@@ -1,4 +1,8 @@
+import webbrowser
 import psycopg2
+import os
+import re
+from bs4 import BeautifulSoup as bs
 from psycopg2 import Error
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
@@ -56,19 +60,73 @@ def submit():
         # get all records
         records = cursor.fetchall()
         print("Total number of rows in table: ", cursor.rowcount)
+        p = []
+        tbl = "<tr><td>Make</td><td>Model</td><td>Year</td><td>Color</td><td>Price</td><td>ZipCode</td><td>Engine</td><td>Transmission</td></tr>"
+        p.append(tbl)
         # Displays user selected query
         print("\nPrinting each row")
         for row in records:
             print("Cid = ", row[0], )
             print("Sid = ", row[1])
             print("Make  = ", row[2])
+            a = "<tr><td>%s</td>" % row[2]
+            p.append(a)
             print("Model  = ", row[3])
+            b = "<td>%s</td>" % row[3]
+            p.append(b)
             print("Year  = ", row[4])
+            c = "<td>%s</td>" % row[4]
+            p.append(c)
             print("Color  = ", row[5])
+            d = "<td>%s</td>" % row[5]
+            p.append(d)
             print("Price  = ", row[6])
+            e = "<td>%s</td>" % row[6]
+            p.append(e)
             print("ZipCode  = ", row[7])
+            f = "<td>%s</td>" % row[7]
+            p.append(f)
             print("Engine  = ", row[8])
+            g = "<td>%s</td>" % row[8]
+            p.append(g)
             print("Transmission  = ", row[9], "\n")
+            h = "<td>%s</td></tr>" % row[9]
+            p.append(h)
+
+        contents = '''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+        <html>
+        <head>
+        <meta content="text/html; charset=ISO-8859-1"
+        http-equiv="content-type">
+        <title>Python Webbrowser</title>
+        </head>
+        <body>
+        <table>
+        %s
+        </table>
+        </body>
+        </html>
+        ''' % (p)
+
+        filename = 'webbrowser.html'
+        output = open(filename, "w")
+        output.write(contents)
+        output.close()
+        webbrowser.open(filename)
+
+#        base = os.path.dirname(os.path.abspath(__file__))
+
+#        html = open(os.path.join(base, 'templates/car_listing.html'))
+
+#        soup = bs(html, 'html.parser')
+
+#        old_text = soup.find("dd", {"id": "c_make"})
+
+#        new_text = old_text.find(text=re.compile(
+#            'Default')).replace_with(row[2])
+
+#        with open("templates/car_listing.html", "wb") as f_output:
+#            f_output.write(soup.prettify("utf-8"))
 
         #cursor = conn.cursor()
         # Print PostgreSQL details

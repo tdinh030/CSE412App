@@ -1,3 +1,6 @@
+from locale import currency
+import time
+from typing import ValuesView
 import webbrowser
 import psycopg2
 import os
@@ -58,6 +61,22 @@ def submit():
             cursor = conn.cursor()
             # Executing the query
             cursor.execute(sql_select_Query, [make, model, year, color])
+
+        elif model != '':
+            sql_select_Query = """select * from car where c_model = %s"""
+            cursor = conn.cursor()
+            cursor.execute(sql_select_Query, [model])
+
+        elif make != '':
+            sql_select_Query = """select * from car where c_make = %s"""
+            cursor = conn.cursor()
+            cursor.execute(sql_select_Query, [make])
+
+        elif year != '':
+            sql_select_Query = """select * from car where c_year = %s"""
+            cursor = conn.cursor()
+            cursor.execute(sql_select_Query, [year])
+
         # if user makes a selection for make field only
         elif make != '' and model == '' and year == '' and color == '' and price == '':
             sql_select_Query = """select * from car where c_make = %s"""
@@ -112,12 +131,16 @@ def submit():
             sql_select_Query = """select * from car where c_color = %s"""
             cursor = conn.cursor()
             cursor.execute(sql_select_Query, [color])
+        else:
+            sql_select_Query = """select * from car order by c_make"""
+            cursor = conn.cursor()
+            cursor.execute(sql_select_Query)
         conn.commit()
         # get all records
         records = cursor.fetchall()
         print("Total number of rows in table: ", cursor.rowcount)
         p = []
-        tbl = "<tr><td>Make</td><td>Model</td><td>Year</td><td>Color</td><td>Price</td><td>ZipCode</td><td>Engine</td><td>Transmission</td></tr>"
+        tbl = "<tr><td>Make</td><td>Model</td><td>Year</td><td>Color</td><td>Price</td><td>ZipCode</td><td>Engine</td><td>Transmission</td><td></td></tr>"
         p.append(tbl)
         # Displays user selected query
         print("\nPrinting each row")
@@ -146,17 +169,22 @@ def submit():
             g = "<td>%s</td>" % row[8]
             p.append(g)
             print("Transmission  = ", row[9], "\n")
-            h = "<td>%s</td></tr>" % row[9]
+            h = "<td>%s</td>" % row[9]
             p.append(h)
+            i = "<td>%s</td></tr>" % "<a href=./templates/car-listing421.html>View</a>"
+            p.append(i)
 
         contents = '''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
         <html>
         <head>
+        <link rel="stylesheet" href="/static/CarListingStyle.css">
         <meta content="text/html; charset=ISO-8859-1"
         http-equiv="content-type">
         <title>Python Webbrowser</title>
         </head>
         <body>
+        <div class="car-details">
+        <dl class="description-list">
         <table>
         %s
         </table>
@@ -168,7 +196,33 @@ def submit():
         output = open(filename, "w")
         output.write(contents)
         output.close()
-        webbrowser.open(filename)
+        webbrowser.open(filename, new=0)
+
+        '''base = os.path.dirname(os.path.abspath(__file__))
+
+        html = open(os.path.join(base, 'templates/car-listing421.html'))
+
+        soup = bs(html, 'html.parser')
+
+        old_text = soup.find_all("dd")
+
+        print(old_text)
+
+        for tag in old_text:
+            print(tag.string)
+            if 'Default Make' in tag.string:
+                print('debug')
+                new_text = old_text.find(
+                    text=re.compile('Default Make')).replace_with(row[2])
+                print('it worked')
+            elif tag.string == "Default Model":
+                tag.string.replace_with(row[3])
+
+        # new_text = old_text.find(text=re.compile(
+            # 'Default')).replace_with(row[2])
+
+        with open("templates/car-listing421.html", "wb") as f_output:
+            f_output.write(soup.prettify("utf-8"))'''
 
         #cursor = conn.cursor()
         # Print PostgreSQL details

@@ -1,0 +1,58 @@
+body {
+  background-color: #f4f4f4;
+  color: 555555;
+
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+
+  line-height: 1.5em;
+}
+
+.description-list {
+  display: grid;
+  grid-template-columns: max-content auto;
+  /* border-bottom: 2px solid blue; */
+}
+
+.td {
+  grid-column-start: 1;
+  margin-left: 20px;
+  font-color: red;
+}
+
+.car-details {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 16px;
+  line-height: 2.5;
+  margin-bottom: 16px;
+  overflow-wrap: break-word;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+}
+
+.vdp-content-wrapper,
+.basics-content-wrapper,
+.vdp-content-wrapper .reviews-content-wrapper {
+  grid-area: basics;
+  grid-row-start: basics;
+  grid-column-start: basics;
+  grid-row-end: basics;
+  grid-column-end: basics;
+  padding: 0 16px;
+  padding-top: 0px;
+  padding-right: 16px;
+  padding-bottom: 0px;
+  padding-left: 16px;
+}
+
+.contact-form-container {
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+}
